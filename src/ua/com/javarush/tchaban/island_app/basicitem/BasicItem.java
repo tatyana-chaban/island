@@ -1,18 +1,17 @@
-package ua.com.javarush.tchaban.island_app.animals;
-
+package ua.com.javarush.tchaban.island_app.basicitem;
 
 import lombok.Data;
 
 @Data
-public abstract class Animal {
+public abstract class BasicItem {
     private double weight;
     private int maxCountOnField;
     private int speed;
     private double kilogramsOfFood;
 
-    public Animal(double weight, int maxNumOfAnimals, int speed, double kilogramsOfFood){
+    public BasicItem(double weight, int maxCountOnField, int speed, double kilogramsOfFood){
         this.weight = weight;
-        this.maxCountOnField = maxNumOfAnimals;
+        this.maxCountOnField = maxCountOnField;
         this.speed = speed;
         this.kilogramsOfFood = kilogramsOfFood;
     }
