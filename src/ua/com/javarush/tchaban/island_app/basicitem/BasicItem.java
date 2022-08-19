@@ -4,15 +4,13 @@ import lombok.Data;
 
 @Data
 public abstract class BasicItem {
-    private double weight;
-    private int maxCountOnField;
-    private int speed;
-    private double kilogramsOfFood;
+    private final double weight;
+    private final int maxCountOnField;
 
-    public BasicItem(double weight, int maxCountOnField, int speed, double kilogramsOfFood){
+    protected boolean isAlive = true;
+
+    public BasicItem(double weight, int maxCountOnField){
         this.weight = weight;
         this.maxCountOnField = maxCountOnField;
-        this.speed = speed;
-        this.kilogramsOfFood = kilogramsOfFood;
     }
 }

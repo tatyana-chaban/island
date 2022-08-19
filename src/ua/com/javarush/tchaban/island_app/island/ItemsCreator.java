@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemsCreator {
 
-    public List<BasicItem> getItems(){
+    public List<BasicItem> getItems() {
         List<BasicItem> items = new ArrayList<>();
         items.add(new Bear());
         items.add(new Boa());
@@ -38,9 +38,9 @@ public class ItemsCreator {
     }
 
 
-    public  List<BasicItem> generateItems(List<BasicItem> items) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public List<BasicItem> generateItems(List<BasicItem> items) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         List<BasicItem> basicItemList = new ArrayList<>();
-        for (BasicItem item: items) {
+        for (BasicItem item : items) {
             Class<? extends BasicItem> clazz = item.getClass();
             Constructor<? extends BasicItem> declaredConstructor = clazz.getDeclaredConstructor();
             int count = item.getMaxCountOnField();

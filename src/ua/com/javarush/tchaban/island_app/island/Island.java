@@ -14,8 +14,8 @@ public class Island {
     public static final int WIDTH = 20;
 
 
-    public Map<Position, List<? extends BasicItem>> generateIsland() {
-        Map<Position, List<? extends BasicItem>> island = new HashMap<>();
+    public Map<Position, List<BasicItem>> generateIsland() {
+        Map<Position, List<BasicItem>> island = new HashMap<>();
         for (int length = 0; length < LENGTH; length++) {
             for (int width = 0; width < WIDTH; width++) {
                 island.put(new Position(length, width), generateItems());
@@ -25,8 +25,8 @@ public class Island {
     }
 
 
-    private List<? extends BasicItem> generateItems() {
-        List<? extends BasicItem> generated = new ArrayList<>();
+    private List<BasicItem> generateItems() {
+        List<BasicItem> generated = new ArrayList<>();
         ItemsCreator creator = new ItemsCreator();
         var items = creator.getItems();
         try {
