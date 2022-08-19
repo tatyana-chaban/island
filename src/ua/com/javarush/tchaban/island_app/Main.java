@@ -12,7 +12,5 @@ public class Main {
         System.out.println("-------------------------------");
         lifeCycle.moveAnimals();
         lifeCycle.printCell(new Position(20,5));
-
-
     }
 }
