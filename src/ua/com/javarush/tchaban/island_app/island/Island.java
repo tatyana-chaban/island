@@ -10,22 +10,22 @@ import java.util.Map;
 
 public class Island {
 
-    public static final int LENGTH = 100;
-    public static final int WIDTH = 20;
+    public static final int LENGTH = 10; //100
+    public static final int WIDTH = 10; //20
 
 
     public Map<Position, List<BasicItem>> generateIsland() {
         Map<Position, List<BasicItem>> island = new HashMap<>();
         for (int length = 0; length < LENGTH; length++) {
             for (int width = 0; width < WIDTH; width++) {
-                island.put(new Position(length, width), generateItems());
+                island.put(new Position(length, width), generateListOfItems());
             }
         }
         return island;
     }
 
 
-    private List<BasicItem> generateItems() {
+    private List<BasicItem> generateListOfItems() {
         List<BasicItem> generated = new ArrayList<>();
         ItemsCreator creator = new ItemsCreator();
         var items = creator.getItems();

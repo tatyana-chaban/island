@@ -3,21 +3,28 @@ package ua.com.javarush.tchaban.island_app.basicitem.animals;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import ua.com.javarush.tchaban.island_app.actions.CanReproduce;
 import ua.com.javarush.tchaban.island_app.actions.Movable;
 import ua.com.javarush.tchaban.island_app.basicitem.BasicItem;
+import ua.com.javarush.tchaban.island_app.island.ItemsCreator;
 import ua.com.javarush.tchaban.island_app.island.Position;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false)
-public abstract class Animal extends BasicItem implements Movable {
+public abstract class Animal extends BasicItem implements Movable, CanReproduce {
     private final int speed;
     private final double kilogramsOfFood;
-    protected boolean movedInThisTurn = false;
+    protected boolean movedThisTurn = false;
     protected boolean leftLocation = false;
 
+
+    private ItemsCreator creator = new ItemsCreator();
 
 
     public Animal(double weight, int maxNumOfAnimals, int speed, double kilogramsOfFood) {
@@ -50,4 +57,14 @@ public abstract class Animal extends BasicItem implements Movable {
         return new Position(length, weight);
     }
 
+    @Override
+    public BasicItem reproduce(Animal animal) {
+        BasicItem newAnimal = null;
+        try {
+            newAnimal = creator.generateOneItem(animal);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();// add own exception
+        }
+        return newAnimal; // use Optional
+    }
 }

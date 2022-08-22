@@ -11,4 +11,9 @@ public class Position {
         this.length = length;
         this.weight = weight;
     }
+
+    public boolean isCorrect() {
+        return (length >= 0 && length < Island.LENGTH
+                && weight >= 0 && weight < Island.WIDTH);
+    }
 }

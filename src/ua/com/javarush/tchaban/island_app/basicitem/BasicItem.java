@@ -8,6 +8,7 @@ public abstract class BasicItem {
     private final int maxCountOnField;
 
     protected boolean isAlive = true;
+    protected boolean reproduceThisTurn = false;
 
     public BasicItem(double weight, int maxCountOnField){
         this.weight = weight;

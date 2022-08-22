@@ -41,16 +41,20 @@ public class ItemsCreator {
     public List<BasicItem> generateItems(List<BasicItem> items) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         List<BasicItem> basicItemList = new ArrayList<>();
         for (BasicItem item : items) {
-            Class<? extends BasicItem> clazz = item.getClass();
-            Constructor<? extends BasicItem> declaredConstructor = clazz.getDeclaredConstructor();
             int count = item.getMaxCountOnField();
             ThreadLocalRandom random = ThreadLocalRandom.current();
             int randomCount = random.nextInt(0, count);
             for (int i = 0; i < randomCount; i++) {
-                BasicItem someItem = declaredConstructor.newInstance();
+                BasicItem someItem = generateOneItem(item);
                 basicItemList.add(someItem);
             }
         }
         return basicItemList;
+    }
+// use Optional
+    public BasicItem generateOneItem(BasicItem item) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Class<? extends BasicItem> clazz = item.getClass();
+        Constructor<? extends BasicItem> declaredConstructor = clazz.getDeclaredConstructor();
+        return declaredConstructor.newInstance();
     }
 }

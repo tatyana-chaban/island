@@ -8,9 +8,9 @@ import ua.com.javarush.tchaban.island_app.life_cycle.LifeCycle;
 public class Main {
     public static void main(String[] args)  {
         LifeCycle lifeCycle = new LifeCycle();
-        lifeCycle.printCell(new Position(20,5));
+        lifeCycle.printCell(new Position(5,5));
         System.out.println("-------------------------------");
-        lifeCycle.moveAnimals();
-        lifeCycle.printCell(new Position(20,5));
+        lifeCycle.reproduction();
+        lifeCycle.printCell(new Position(5,5));
     }
 }
