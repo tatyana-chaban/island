@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LifeCycle {
 
@@ -28,7 +29,36 @@ public class LifeCycle {
     }
 
     public void eat() {
+        for (Position initialPosition : map.keySet()) {
+            List<BasicItem> basicItems = map.get(initialPosition);
+            basicItems.forEach(t -> {
+                if (t instanceof Animal) {
+                    ((Animal) t).setSatiation(((Animal) t).getSatiation() - 25);// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                }
+            });
+            List<BasicItem> newList = new CopyOnWriteArrayList<>(basicItems);
+            for (BasicItem item : newList) {
+                if ((item instanceof Animal animal) && item.isAlive()) {
+                    Optional<BasicItem> itemForEat = animal.eat(newList);
+                    if (itemForEat.isPresent()) {
+                        BasicItem item1 = itemForEat.get();
 
+                        item1.setAlive(false);
+                        double nutritionalValue = item1.getWeight();
+                        double currentSatiation = animal.getSatiation();
+                        if (nutritionalValue >= animal.getKilogramsOfFood()) {
+                            animal.setSatiation(Animal.MAX_SATIATION);
+                        } else {
+                            double satiationAfterEat = currentSatiation + nutritionalValue;
+                            animal.setSatiation(satiationAfterEat);
+                        }
+                        removeWhoWasEaten(newList);
+                    }
+                }
+            }
+            map.replace(initialPosition, map.get(initialPosition), newList);
+
+        }
     }
 
     public void moveAnimals() {
@@ -68,7 +98,7 @@ public class LifeCycle {
                     int MIN_NUMBER_FOR_REPRODUCE = 2;
                     int numberAnimalForReproduce = (int) basicItems.stream()
                             .filter(i -> i.getClass().equals(animal.getClass()))
-                            .filter(i -> ! i.isReproduceThisTurn())
+                            .filter(i -> !i.isReproduceThisTurn())
                             .count();
                     if (numberAnimalForReproduce >= MIN_NUMBER_FOR_REPRODUCE && enoughSpaceForNewItem(animal, initialPosition)) {
                         animal.setReproduceThisTurn(true);
@@ -98,6 +128,11 @@ public class LifeCycle {
 
     private List<BasicItem> removeWhoLeftLocation(List<BasicItem> items) {
         items.removeIf(t -> t instanceof Animal && ((Animal) t).isLeftLocation());
+        return items;
+    }
+
+    private List<BasicItem> removeWhoWasEaten(List<BasicItem> items) {
+        items.removeIf(t -> !t.isAlive());
         return items;
     }
 }

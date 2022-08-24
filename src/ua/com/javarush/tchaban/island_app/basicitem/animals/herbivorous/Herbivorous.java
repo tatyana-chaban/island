@@ -1,9 +1,12 @@
 package ua.com.javarush.tchaban.island_app.basicitem.animals.herbivorous;
 
+import lombok.NoArgsConstructor;
 import ua.com.javarush.tchaban.island_app.basicitem.animals.Animal;
 
+@NoArgsConstructor
 public abstract class Herbivorous extends Animal {
-    public Herbivorous(double weight, int maxNumOfAnimals, int speed, double kilogramsOfFood) {
-        super(weight, maxNumOfAnimals, speed, kilogramsOfFood);
+    {
+        foodPreferences.put("Herb", 100);
     }
+
 }

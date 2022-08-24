@@ -2,36 +2,30 @@ package ua.com.javarush.tchaban.island_app.basicitem.animals;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ua.com.javarush.tchaban.island_app.actions.CanReproduce;
-import ua.com.javarush.tchaban.island_app.actions.Movable;
+import ua.com.javarush.tchaban.island_app.actions.AnimalAbilities;
 import ua.com.javarush.tchaban.island_app.basicitem.BasicItem;
-import ua.com.javarush.tchaban.island_app.island.ItemsCreator;
 import ua.com.javarush.tchaban.island_app.island.Position;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Getter
-@Setter
 @EqualsAndHashCode(callSuper = false)
-public abstract class Animal extends BasicItem implements Movable, CanReproduce {
-    private final int speed;
-    private final double kilogramsOfFood;
+@NoArgsConstructor
+public abstract class Animal extends BasicItem implements AnimalAbilities {
+    public static final double MAX_SATIATION = 100.0;
+
+    protected int speed;
+    protected double kilogramsOfFood;
+    @Setter
     protected boolean movedThisTurn = false;
+    @Setter
     protected boolean leftLocation = false;
+    @Setter
+    protected double satiation = MAX_SATIATION;
 
-
-    private ItemsCreator creator = new ItemsCreator();
-
-
-    public Animal(double weight, int maxNumOfAnimals, int speed, double kilogramsOfFood) {
-        super(weight, maxNumOfAnimals);
-        this.speed = speed;
-        this.kilogramsOfFood = kilogramsOfFood;
-    }
+    protected Map<String, Integer> foodPreferences = new HashMap<>();
 
     @Override
     public Position move(Position currentPosition) {
@@ -59,12 +53,13 @@ public abstract class Animal extends BasicItem implements Movable, CanReproduce 
 
     @Override
     public BasicItem reproduce(Animal animal) {
-        BasicItem newAnimal = null;
-        try {
-            newAnimal = creator.generateOneItem(animal);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();// add own exception
-        }
-        return newAnimal; // use Optional
+        return animal.newInstance();
+    }
+
+    @Override
+    public Optional<BasicItem> eat(List<BasicItem> availableItems) {
+        return availableItems.stream()
+                .filter(t -> foodPreferences.containsKey(t.getClass().getSimpleName()))
+                .findAny();
     }
 }

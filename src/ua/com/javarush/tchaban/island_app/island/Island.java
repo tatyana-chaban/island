@@ -2,8 +2,6 @@ package ua.com.javarush.tchaban.island_app.island;
 
 import ua.com.javarush.tchaban.island_app.basicitem.BasicItem;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,22 +16,16 @@ public class Island {
         Map<Position, List<BasicItem>> island = new HashMap<>();
         for (int length = 0; length < LENGTH; length++) {
             for (int width = 0; width < WIDTH; width++) {
-                island.put(new Position(length, width), generateListOfItems());
+                island.put(new Position(length, width), generateItemsInPosition());
             }
         }
         return island;
     }
 
 
-    private List<BasicItem> generateListOfItems() {
-        List<BasicItem> generated = new ArrayList<>();
+    private List<BasicItem> generateItemsInPosition() {
         ItemsCreator creator = new ItemsCreator();
-        var items = creator.getItems();
-        try {
-            generated = creator.generateItems(items);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace(); // throw own exception
-        }
-        return generated;
+        var items = creator.getItemsTypes();
+        return creator.generateItems(items);
     }
 }

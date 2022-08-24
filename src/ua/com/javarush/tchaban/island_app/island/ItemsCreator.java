@@ -5,15 +5,13 @@ import ua.com.javarush.tchaban.island_app.basicitem.animals.carnivorous.*;
 import ua.com.javarush.tchaban.island_app.basicitem.animals.herbivorous.*;
 import ua.com.javarush.tchaban.island_app.basicitem.plants.*;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemsCreator {
 
-    public List<BasicItem> getItems() {
+    public List<BasicItem> getItemsTypes() {
         List<BasicItem> items = new ArrayList<>();
         items.add(new Bear());
         items.add(new Boa());
@@ -38,23 +36,18 @@ public class ItemsCreator {
     }
 
 
-    public List<BasicItem> generateItems(List<BasicItem> items) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public List<BasicItem> generateItems(List<BasicItem> items) {
         List<BasicItem> basicItemList = new ArrayList<>();
         for (BasicItem item : items) {
             int count = item.getMaxCountOnField();
             ThreadLocalRandom random = ThreadLocalRandom.current();
             int randomCount = random.nextInt(0, count);
-            for (int i = 0; i < randomCount; i++) {
-                BasicItem someItem = generateOneItem(item);
+            for (int i = 0; i <= randomCount; i++) {
+                BasicItem someItem = item.newInstance();
                 basicItemList.add(someItem);
             }
         }
         return basicItemList;
     }
-// use Optional
-    public BasicItem generateOneItem(BasicItem item) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Class<? extends BasicItem> clazz = item.getClass();
-        Constructor<? extends BasicItem> declaredConstructor = clazz.getDeclaredConstructor();
-        return declaredConstructor.newInstance();
-    }
+
 }
