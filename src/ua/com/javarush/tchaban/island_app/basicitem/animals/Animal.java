@@ -11,18 +11,15 @@ import ua.com.javarush.tchaban.island_app.island.Position;
 import java.util.*;
 
 @Getter
+@Setter
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public abstract class Animal extends BasicItem implements AnimalAbilities {
     public static final double MAX_SATIATION = 100.0;
-
     protected int speed;
     protected double kilogramsOfFood;
-    @Setter
     protected boolean movedThisTurn = false;
-    @Setter
     protected boolean leftLocation = false;
-    @Setter
     protected double satiation = MAX_SATIATION;
 
     protected Map<String, Integer> foodPreferences = new HashMap<>();

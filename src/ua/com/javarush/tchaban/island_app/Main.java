@@ -9,8 +9,7 @@ public class Main {
         LifeCycle lifeCycle = new LifeCycle();
         lifeCycle.printCell(new Position(5,5));
         System.out.println("-------------------------------");
-        lifeCycle.eat();
-        lifeCycle.printCell(new Position(5,5));
-
+        lifeCycle.startLifeCycle();
+       // lifeCycle.printCell(new Position(5,5));
     }
 }

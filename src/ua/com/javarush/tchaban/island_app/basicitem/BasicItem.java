@@ -8,6 +8,8 @@ public abstract class BasicItem {
     protected int maxCountOnField;
     protected boolean isAlive = true;
     protected boolean reproduceThisTurn = false;
+    protected boolean newborn = false;
+
 
     public abstract BasicItem newInstance();
 }

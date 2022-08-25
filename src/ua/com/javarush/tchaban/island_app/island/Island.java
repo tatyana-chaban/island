@@ -11,8 +11,9 @@ public class Island {
     public static final int LENGTH = 10; //100
     public static final int WIDTH = 10; //20
 
+    private final ItemsCreator creator = new ItemsCreator();
 
-    public Map<Position, List<BasicItem>> generateIsland() {
+    public Map<Position, List<BasicItem>> generate() {
         Map<Position, List<BasicItem>> island = new HashMap<>();
         for (int length = 0; length < LENGTH; length++) {
             for (int width = 0; width < WIDTH; width++) {
@@ -24,7 +25,6 @@ public class Island {
 
 
     private List<BasicItem> generateItemsInPosition() {
-        ItemsCreator creator = new ItemsCreator();
         var items = creator.getItemsTypes();
         return creator.generateItems(items);
     }
