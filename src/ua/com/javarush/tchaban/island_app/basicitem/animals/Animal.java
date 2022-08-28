@@ -48,13 +48,9 @@ public abstract class Animal extends BasicItem implements AnimalAbilities {
         return new Position(length, weight);
     }
 
-    @Override
-    public BasicItem reproduce(Animal animal) {
-        return animal.newInstance();
-    }
 
     @Override
-    public Optional<BasicItem> eat(List<BasicItem> availableItems) {
+    public Optional<BasicItem> searchForFood(List<BasicItem> availableItems) {
         return availableItems.stream()
                 .filter(t -> foodPreferences.containsKey(t.getClass().getSimpleName()))
                 .findAny();

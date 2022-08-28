@@ -20,7 +20,7 @@ public class Fox extends Carnivorous{
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Fox();
     }
 }

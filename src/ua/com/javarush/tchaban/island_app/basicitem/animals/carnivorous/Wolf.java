@@ -25,7 +25,7 @@ public class Wolf extends Carnivorous {
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Wolf();
     }
 }

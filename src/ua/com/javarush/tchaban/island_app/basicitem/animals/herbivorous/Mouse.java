@@ -16,7 +16,7 @@ public class Mouse extends Herbivorous{
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Mouse();
     }
 

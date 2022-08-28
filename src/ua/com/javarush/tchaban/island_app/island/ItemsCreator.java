@@ -11,7 +11,41 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ItemsCreator {
 
-    public List<BasicItem> getItemsTypes() {
+    private final List<BasicItem> typesOfItems = getItemsTypes();
+    private final List<BasicItem> typesOfPlants = getPlantsTypes();
+
+
+    public List<BasicItem> generateItems() {
+        List<BasicItem> itemsOnField = new ArrayList<>();
+        for (BasicItem item : typesOfItems) {
+            int maxCountOnField = item.getMaxCountOnField();
+            int randomCount = ThreadLocalRandom.current().nextInt(0, maxCountOnField);
+            for (int i = 0; i <= randomCount; i++) {
+                BasicItem newItem = item.makeCopy();
+                itemsOnField.add(newItem);
+            }
+        }
+        return itemsOnField;
+    }
+
+    public void regenerationOfPlants(List<BasicItem> items) {
+        for (BasicItem plant: typesOfPlants) {
+            int maxCount = plant.getMaxCountOnField() + 1;
+            int countOfThisPlantInPosition = (int) items.stream()
+                    .filter(i -> i.getClass().equals(plant.getClass()))
+                    .count();
+            int randomCount = ThreadLocalRandom.current().nextInt(0, maxCount);
+            int finaCountOfPlant = countOfThisPlantInPosition + randomCount;
+            if (finaCountOfPlant > plant.getMaxCountOnField()) {
+                finaCountOfPlant = plant.getMaxCountOnField();
+            }
+            for (int i = 0; i <= finaCountOfPlant; i++) {
+                items.add(plant.makeCopy());
+            }
+        }
+    }
+
+    private List<BasicItem> getItemsTypes() {
         List<BasicItem> items = new ArrayList<>();
         items.add(new Bear());
         items.add(new Boa());
@@ -35,19 +69,11 @@ public class ItemsCreator {
         return items;
     }
 
-
-    public List<BasicItem> generateItems(List<BasicItem> items) {
-        List<BasicItem> basicItemList = new ArrayList<>();
-        for (BasicItem item : items) {
-            int count = item.getMaxCountOnField();
-            ThreadLocalRandom random = ThreadLocalRandom.current();
-            int randomCount = random.nextInt(0, count);
-            for (int i = 0; i <= randomCount; i++) {
-                BasicItem someItem = item.newInstance();
-                basicItemList.add(someItem);
-            }
-        }
-        return basicItemList;
+    private List<BasicItem> getPlantsTypes() {
+        List<BasicItem> plants = new ArrayList<>();
+        plants.add(new Herb());
+        return plants;
     }
+
 
 }

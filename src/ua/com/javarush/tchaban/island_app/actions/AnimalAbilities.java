@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AnimalAbilities {
-    Optional<BasicItem> eat(List<BasicItem> availableItems);
-    Position move(Position position);
-    BasicItem reproduce(Animal animal);
+    Optional<BasicItem> searchForFood(List<BasicItem> availableItems);
+    Position move(Position currentPosition);
 }

@@ -13,7 +13,7 @@ public class Position {
     }
 
     public boolean isCorrect() {
-        return (length >= 0 && length < Island.LENGTH
-                && weight >= 0 && weight < Island.WIDTH);
+        return (length >= 0 && length < IslandCreator.LENGTH
+                && weight >= 0 && weight < IslandCreator.WIDTH);
     }
 }

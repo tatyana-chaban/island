@@ -12,7 +12,7 @@ public class Deer extends Herbivorous{
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Caterpillar();
     }
 }

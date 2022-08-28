@@ -12,7 +12,7 @@ public class Goat extends Herbivorous{
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Goat();
     }
 }

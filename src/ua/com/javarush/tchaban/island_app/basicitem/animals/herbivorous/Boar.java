@@ -17,7 +17,7 @@ public class Boar extends Herbivorous{
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Boar();
     }
 

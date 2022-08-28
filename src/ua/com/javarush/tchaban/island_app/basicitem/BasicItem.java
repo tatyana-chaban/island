@@ -11,5 +11,5 @@ public abstract class BasicItem {
     protected boolean newborn = false;
 
 
-    public abstract BasicItem newInstance();
+    public abstract BasicItem makeCopy();
 }

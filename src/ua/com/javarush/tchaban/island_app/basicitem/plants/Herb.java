@@ -12,7 +12,7 @@ public class Herb extends Plants{
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Herb();
     }
 }

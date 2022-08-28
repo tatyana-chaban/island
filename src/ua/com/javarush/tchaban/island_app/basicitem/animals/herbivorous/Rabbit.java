@@ -13,7 +13,7 @@ public class Rabbit extends Herbivorous{
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Rabbit();
     }
 }

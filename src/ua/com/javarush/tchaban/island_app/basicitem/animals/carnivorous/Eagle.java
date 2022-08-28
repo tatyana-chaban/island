@@ -20,7 +20,7 @@ public class Eagle extends Carnivorous{
     }
 
     @Override
-    public BasicItem newInstance() {
+    public BasicItem makeCopy() {
         return new Eagle();
     }
 }

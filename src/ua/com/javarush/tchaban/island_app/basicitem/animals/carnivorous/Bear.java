@@ -26,7 +26,7 @@ public class Bear extends Carnivorous{
 
     }
 
-    public BasicItem newInstance(){
+    public BasicItem makeCopy(){
         return new Bear();
     }
 
