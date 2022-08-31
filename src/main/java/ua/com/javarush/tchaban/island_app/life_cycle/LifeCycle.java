@@ -196,7 +196,6 @@ public class LifeCycle {
                     double currentSatiation = animal.getSatiation();
                     if (currentSatiation <= 0.0) {
                         animal.setAlive(false);
-                        //  basicItems.remove(item);
                         IslandStatistics.DIED_OF_HUNGER++;
                     }
                 }
@@ -208,7 +207,6 @@ public class LifeCycle {
         for (var pair : island.entrySet()) {
             List<BasicItem> items = pair.getValue();
             itemsCreator.regenerationOfPlants(items);
-
         }
     }
 
