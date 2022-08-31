@@ -21,5 +21,4 @@ public class Duck extends Herbivorous{
     public BasicItem makeCopy() {
         return new Duck();
     }
-
 }

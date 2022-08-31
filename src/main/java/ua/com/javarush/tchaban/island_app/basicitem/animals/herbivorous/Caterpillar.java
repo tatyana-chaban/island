@@ -16,5 +16,4 @@ public class Caterpillar extends Herbivorous{
         public BasicItem makeCopy() {
             return new Caterpillar();
         }
-
 }

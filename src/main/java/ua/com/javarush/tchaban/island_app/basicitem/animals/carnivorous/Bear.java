@@ -28,6 +28,4 @@ public class Bear extends Carnivorous{
     public BasicItem makeCopy(){
         return new Bear();
     }
-
-
 }

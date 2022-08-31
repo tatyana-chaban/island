@@ -6,7 +6,6 @@ import ua.com.javarush.tchaban.island_app.island.IslandCreator;
 import ua.com.javarush.tchaban.island_app.island.ItemsCreator;
 import ua.com.javarush.tchaban.island_app.island.Position;
 import ua.com.javarush.tchaban.island_app.statistics.IslandStatistics;
-
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,142 +16,96 @@ public class LifeCycle {
     IslandCreator islandCreator = new IslandCreator();
     Map<Position, List<BasicItem>> island = islandCreator.generate();
     IslandStatistics statistics = new IslandStatistics(island);
-
-
-    public void printCell(Position position) {
-        List<BasicItem> items = island.get(position);
-        for (BasicItem item : items) {
-            System.out.print(item.getName() + "...");
-        }
-    }
-
-    public void test() {
-        statistics.getCurrentStatistics();
-        for (int i = 0; i < 20; i++) {
-            for (var pair : island.entrySet()) {
-                eat(pair);
-            }
-            for (var pair : island.entrySet()) {
-                reproduction(pair);
-            }
-            for (var pair : island.entrySet()) {
-                moveAnimals(pair);
-            }
-            statistics.getCurrentStatistics();
-        }
-    }
-
+    
     public void newDay() {
         startTheDay();
         mainActions();
         endTheDay();
     }
 
-    public void startTheDay() {
-        for (var pair : island.entrySet()) {
-            List<BasicItem> items = pair.getValue();
-            getHungry(items);
-            checkSatiationLevel(items);
-            removeWhoDied(items);
-            itemsCreator.regenerationOfPlants(items);
-        }
+    private void startTheDay() {
+        getHungry();
+        checkSatiationLevel();
+        revivalPlantOnTheIsland();
+        removeWhoDied();
+    }
+    
+    private void mainActions() {
+        eat();
+        reproduction();
+        moveAnimals();
     }
 
-    public void mainActions() {
-        for (var pair : island.entrySet()) {
-            eat(pair);
-        }
-        for (var pair : island.entrySet()) {
-            reproduction(pair);
-        }
-        for (var pair : island.entrySet()) {
-            moveAnimals(pair);
-        }
+    private void endTheDay() {
+        statistics.getCurrentStatistics();
+        resetFlags();
     }
 
-    public void endTheDay() {
-        statistics.startCollecting();
-        statistics.print();
+    private void eat() {
         for (var pair : island.entrySet()) {
-            List<BasicItem> items = pair.getValue();
-            removeWhoDied(items);
-            resetFlags(items);
-        }
-        statistics.reset();
-    }
-
-    public void eat(Map.Entry<Position, List<BasicItem>> pair) {
-        List<BasicItem> basicItems = new CopyOnWriteArrayList<>(pair.getValue());
-        for (BasicItem item : basicItems) {
-            if ((item instanceof Animal animal) && item.isAlive()) {
-                Optional<BasicItem> itemForEat = animal.searchForFood(basicItems);
-                if (itemForEat.isPresent()) {
-                    BasicItem eatenItem = itemForEat.get();
-                    if (managedToEat(animal, eatenItem)) {
-                        eatenItem.setAlive(false);
-                        IslandStatistics.EATEN++;
-                        double nutritionalValue = eatenItem.getWeight();
-                        double currentSatiation = animal.getSatiation();
-                        if (nutritionalValue >= animal.getKilogramsToSaturate()) {
-                            animal.setSatiation(Animal.MAX_SATIATION);
-                        } else {
-                            double satiationAfterEat = currentSatiation + nutritionalValue;
-                            animal.setSatiation(satiationAfterEat);
+            List<BasicItem> basicItems = new CopyOnWriteArrayList<>(pair.getValue());
+            for (BasicItem item : basicItems) {
+                if ((item instanceof Animal animal) && item.isAlive()) {
+                    Optional<BasicItem> itemForEat = animal.searchForFood(basicItems);
+                    if (itemForEat.isPresent()) {
+                        BasicItem eatenItem = itemForEat.get();
+                        if (managedToEat(animal, eatenItem)) {
+                            getSaturated(animal, eatenItem);
+                            eatenItem.setAlive(false);
+                            IslandStatistics.EATEN++;
+                            basicItems.remove(eatenItem);
                         }
-                        removeWhoDied(basicItems);
+                    }
+                }
+            }
+            island.replace(pair.getKey(), pair.getValue(), new ArrayList<>(basicItems));
+        }
+    }
+
+    private void moveAnimals() {
+        for (var pair : island.entrySet()) {
+            Position initialPosition = pair.getKey();
+            List<BasicItem> basicItems = pair.getValue();
+            Iterator<BasicItem> iterator = basicItems.listIterator();
+            if (iterator.hasNext()) {
+                BasicItem item = iterator.next();
+                if ((item instanceof Animal animal) && item.isAlive()) {
+                    Position newPosition;
+                    Position currentPosition = initialPosition;
+                    for (int i = 0; i < animal.getSpeed(); i++) {
+                        newPosition = animal.move(currentPosition);
+                        if (newPosition.isCorrect() && enoughSpaceForNewItem(item, newPosition)) {
+                            currentPosition = newPosition;
+                        }
+                    }
+                    if (!currentPosition.equals(initialPosition)) {
+                        List<BasicItem> newLocation = island.get(currentPosition);
+                        newLocation.add(animal);
+                        iterator.remove();
                     }
                 }
             }
         }
-        island.replace(pair.getKey(), pair.getValue(), basicItems);
     }
 
-
-    public void moveAnimals(Map.Entry<Position, List<BasicItem>> pair) {
-        Position initialPosition = pair.getKey();
-        List<BasicItem> copyBasicItems = new CopyOnWriteArrayList<>(pair.getValue());
-        for (BasicItem item : copyBasicItems) {
-            if ((item instanceof Animal animal) && item.isAlive()) {
-                Position somePosition;
-                Position currentPosition = initialPosition;
-                for (int i = 0; i < animal.getSpeed(); i++) {
-                    somePosition = animal.move(currentPosition);
-                    if (somePosition.isCorrect() && enoughSpaceForNewItem(item, somePosition)) {
-                        currentPosition = somePosition;
+    private void reproduction() {
+        for (var pair : island.entrySet()) {
+            List<BasicItem> basicItems = pair.getValue();
+            List<BasicItem> newList = new ArrayList<>(basicItems); 
+            for (BasicItem item : basicItems) {
+                if (canReproduce(item, pair.getKey())) {
+                    item.setReproduceThisTurn(true);
+                    if (findCouple(basicItems, item)) {
+                        BasicItem newItem = item.makeCopy();
+                        newItem.setReproduceThisTurn(true);
+                        newItem.setNewborn(true);
+                        newList.add(newItem);
+                        IslandStatistics.NEWBORN++;
                     }
                 }
-                if (!currentPosition.equals(initialPosition)) {
-                    List<BasicItem> newLocation = island.get(currentPosition);
-                    newLocation.add(animal);
-                    copyBasicItems.remove(animal);
-                }
             }
+            island.replace(pair.getKey(), pair.getValue(), newList);
         }
-        island.replace(initialPosition, island.get(initialPosition), copyBasicItems);
-    }
-
-    public void reproduction(Map.Entry<Position, List<BasicItem>> pair) {
-        List<BasicItem> basicItems = pair.getValue();
-        List<BasicItem> newList = new ArrayList<>(basicItems);
-        for (BasicItem item : basicItems) {
-            if ((item instanceof Animal animal) && item.isAlive() && !item.isReproduceThisTurn()) {
-                if (enoughAnimalsToReproduce(animal, pair.getKey())
-                        && enoughSpaceForNewItem(animal, pair.getKey())) {
-                    animal.setReproduceThisTurn(true);
-                    Optional<BasicItem> pairForReproduce = basicItems.stream()
-                            .filter(basicItem -> basicItem.getName().equals(animal.getName()))
-                            .filter(basicItem -> !basicItem.isReproduceThisTurn())
-                            .findAny();
-                    pairForReproduce.ifPresent(basicItem -> basicItem.setReproduceThisTurn(true));
-                    BasicItem newItem = animal.makeCopy();
-                    newItem.setReproduceThisTurn(true);
-                    newItem.setNewborn(true);
-                    newList.add(newItem);
-                    IslandStatistics.NEWBORN++;
-                }
-            }
-        }
-        island.replace(pair.getKey(), pair.getValue(), newList);
     }
 
     private boolean enoughSpaceForNewItem(BasicItem sample, Position position) {
@@ -174,8 +127,32 @@ public class LifeCycle {
         return (amountAnimalsForReproduce >= MIN_AMOUNT_FOR_REPRODUCE);
     }
 
-    private void removeWhoDied(List<BasicItem> items) {
-        items.removeIf(item -> !item.isAlive());
+    private boolean canReproduce(BasicItem item, Position position) {
+        return item instanceof Animal animal
+                && item.isAlive()
+                && !item.isReproduceThisTurn()
+                && enoughAnimalsToReproduce(animal, position)
+                && enoughSpaceForNewItem(animal, position);
+    }
+
+    private boolean findCouple(List<BasicItem> basicItems, BasicItem item) {
+        Optional<BasicItem> any = basicItems.stream()
+                .filter(basicItem -> basicItem.getName().equals(item.getName()))
+                .filter(basicItem -> !basicItem.isReproduceThisTurn())
+                .findAny();
+        if (any.isPresent()) {
+            any.ifPresent(basicItem -> basicItem.setReproduceThisTurn(true));
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    private void removeWhoDied() {
+        for (var pair : island.entrySet()) {
+            List<BasicItem> items = pair.getValue();
+            items.removeIf(item -> !item.isAlive());
+        }
     }
 
     private boolean managedToEat(Animal hunter, BasicItem victim) {
@@ -185,31 +162,62 @@ public class LifeCycle {
         return random <= percent;
     }
 
-    private void getHungry(List<BasicItem> basicItems) {
-        int energyToSustainLife = 25;
-        basicItems.forEach(item -> {
-            if (item instanceof Animal animal) {
-                animal.setSatiation(animal.getSatiation() - energyToSustainLife);
-            }
-        });
+    private void getSaturated(Animal animal, BasicItem eatenItem) {
+        double eatenItemWeight = eatenItem.getWeight();
+        double satiationAfterEat = calculateSatiationAfterEat(animal, eatenItemWeight);
+        if (eatenItemWeight >= animal.getKilogramsToSaturate()) {
+            animal.setSatiation(Animal.MAX_SATIATION);
+        } else {
+            animal.setSatiation(satiationAfterEat);
+        }
     }
 
-    private void checkSatiationLevel(List<BasicItem> basicItems) {
-        basicItems.forEach(item -> {
-            if (item instanceof Animal animal) {
-                double currentSatiation = animal.getSatiation();
-                if (currentSatiation <= 0.0) {
-                    animal.setAlive(false);
-                    IslandStatistics.DIED_OF_HUNGER++;
+    private double calculateSatiationAfterEat(Animal animal, double weight) {
+        return (weight * 100) / animal.getKilogramsToSaturate() + animal.getSatiation();
+    }
+
+    private void getHungry() {
+        double energyToSustainLife = 25.0;
+        for (var pair : island.entrySet()) {
+            List<BasicItem> basicItems = pair.getValue();
+            basicItems.forEach(item -> {
+                if (item instanceof Animal animal) {
+                    animal.setSatiation(animal.getSatiation() - energyToSustainLife);
                 }
-            }
-        });
+            });
+        }
     }
 
-    private void resetFlags(List<BasicItem> basicItems) {
-        for (var item : basicItems) {
-            item.setNewborn(false);
-            item.setReproduceThisTurn(false);
+    private void checkSatiationLevel() {
+        for (var pair : island.entrySet()) {
+            List<BasicItem> basicItems = pair.getValue();
+            basicItems.forEach(item -> {
+                if (item instanceof Animal animal) {
+                    double currentSatiation = animal.getSatiation();
+                    if (currentSatiation <= 0.0) {
+                        animal.setAlive(false);
+                        //  basicItems.remove(item);
+                        IslandStatistics.DIED_OF_HUNGER++;
+                    }
+                }
+            });
+        }
+    }
+
+    private void revivalPlantOnTheIsland() {
+        for (var pair : island.entrySet()) {
+            List<BasicItem> items = pair.getValue();
+            itemsCreator.regenerationOfPlants(items);
+
+        }
+    }
+
+    private void resetFlags() {
+        for (var pair : island.entrySet()) {
+            for (var item : pair.getValue()) {
+                item.setNewborn(false);
+                item.setReproduceThisTurn(false);
+            }
         }
     }
 }

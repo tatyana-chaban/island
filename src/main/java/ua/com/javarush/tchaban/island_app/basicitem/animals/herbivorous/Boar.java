@@ -22,5 +22,4 @@ public class Boar extends Herbivorous{
     public BasicItem makeCopy() {
         return new Boar();
     }
-
 }

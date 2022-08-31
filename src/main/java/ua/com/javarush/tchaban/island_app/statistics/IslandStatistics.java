@@ -26,27 +26,13 @@ public class IslandStatistics {
         this.island = island;
     }
 
-    public void print() {
-        System.out.println(
-                "Количество существ на острове: " + ITEMS +
-                        "\n- растений восстановилось: " + PLANTS_REGENERATED +
-                        "\n- растений в конце дня: " + PLANTS +
-                        "\n- животных: " + ANIMALS +
-                        "\n- травоядных: " + HERBIVOROUS +
-                        "\n- хищников: " + CARNIVOROUS +
-                        "\n- было съедено: " + EATEN +
-                        "\n- умерло от голода: " + DIED_OF_HUNGER +
-                        "\n- родилось: " + NEWBORN
-        );
-    }
-
     public void getCurrentStatistics() {
         startCollecting();
         print();
         reset();
     }
 
-    public void startCollecting() {
+    private void startCollecting() {
         for (var pair : island.entrySet()) {
             for (var item : pair.getValue()) {
                 ITEMS++;
@@ -64,7 +50,21 @@ public class IslandStatistics {
         }
     }
 
-    public void reset() {
+    public void print() {
+        System.out.println(
+                "Number of creatures on the island: " + ITEMS +
+                        "\n- plants regenerated: " + PLANTS_REGENERATED +
+                        "\n- plants at the end of the day: " + PLANTS +
+                        "\n- animals: " + ANIMALS +
+                        "\n- herbivores: " + HERBIVOROUS +
+                        "\n- carnivores: " + CARNIVOROUS +
+                        "\n- was eaten: " + EATEN +
+                        "\n- died of hunger: " + DIED_OF_HUNGER +
+                        "\n- was born: " + NEWBORN
+        );
+    }
+
+    private void reset() {
         ITEMS = 0;
         ANIMALS = 0;
         HERBIVOROUS = 0;
